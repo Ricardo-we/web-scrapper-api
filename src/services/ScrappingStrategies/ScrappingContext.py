@@ -23,5 +23,8 @@ class ScrappingContext:
 
         return self
 
-    def execute(self):
-        return self.strategy.format_page_data()
+    def execute(self, search=""):
+        return self.strategy.format_page_data(search)
+
+    def execute_random_selection(self):
+        return self.strategy.random_selection()

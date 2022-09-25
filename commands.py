@@ -1,3 +1,5 @@
+from importlib import import_module
+
 import subprocess
 import os
 import sys
@@ -16,6 +18,13 @@ def run_virtual_env_command(virtual_env_root=VENV_ROOT):
         print(e)
         print("FAILED starting venv")
         return False
+
+
+# def run_tests():
+#     try:
+#         import_module()
+#     except Exception as err:
+#         print(err)
 
 
 def main(action=""):

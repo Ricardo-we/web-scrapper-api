@@ -7,15 +7,18 @@ from src.utils.base.DefaultResponses import DefaultResponses
 from src.services.ScrappingStrategies.ScrappingContext import ScrappingContext
 
 route_name = "scrap"
-scraps_router = APIRouter()
+router = APIRouter()
 users_context = UserContext()
 
 
-@scraps_router.get(f"/{route_name}")
-def get_scrapped_page():
+@router.get(f"/{route_name}")
+def get_scrapped_page(search: str):
     try:
         scrapping_context = ScrappingContext()
-        result = scrapping_context.execute()
+        if(len(search) > 0):
+            result = scrapping_context.execute(search)
+        else:
+            result = scrapping_context.execute_random_selection()
         return result
     except Exception as err:
         return DefaultResponses.error_response(err, "Something went wrong")

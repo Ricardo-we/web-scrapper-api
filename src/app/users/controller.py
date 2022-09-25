@@ -7,11 +7,11 @@ from src.utils.generic.Encrypter import Encrypter
 from src.utils.base.DefaultResponses import DefaultResponses
 
 route_name = "users"
-user_router = APIRouter()
+router = APIRouter()
 users_context = UserContext()
 
 
-@user_router.get(f"/{route_name}")
+@router.get(f"/{route_name}")
 def get_users():
     try:
         users = conn.execute(select(User)).fetchall()
@@ -20,7 +20,7 @@ def get_users():
         return DefaultResponses.error_response(err, "Something went wrong")
 
 
-@user_router.post(f"/{route_name}")
+@router.post(f"/{route_name}")
 def create_user(user: users_context.schema):
     try:
 
@@ -32,7 +32,7 @@ def create_user(user: users_context.schema):
         return DefaultResponses.error_response(err, "Something went wrong")
 
 
-@user_router.put(f"/{route_name}/{{user_id}}")
+@router.put(f"/{route_name}/{{user_id}}")
 def update_user(user_id: int, user: users_context.schema, response: Response):
     try:
         user_data = {"username": user.username, "email": user.email}
@@ -48,7 +48,7 @@ def update_user(user_id: int, user: users_context.schema, response: Response):
         return DefaultResponses.error_response(err, "Something went wrong")
 
 
-@user_router.delete(f"/{route_name}/{{user_id}}")
+@router.delete(f"/{route_name}/{{user_id}}")
 def delete_user(user_id: int, response: Response):
     try:
         conn.execute(
