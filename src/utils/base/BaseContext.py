@@ -1,0 +1,3 @@
+
+class BaseContext:
+    schema: any
