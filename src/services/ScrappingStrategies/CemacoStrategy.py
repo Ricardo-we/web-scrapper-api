@@ -1,11 +1,19 @@
 from src.services.WebDriver.WebDriver import WebDriver
 from .BaseStrategy import BaseStrategy
 from bs4 import BeautifulSoup
+import re
 
 
 class CemacoStrategy(BaseStrategy):
     url = "https://www.cemaco.com"
     endpoint = ""
+    cemaco_url_regex = "^https\:\/\/www.cemaco.com\/"
+
+    def get_item_key(self, item_url):
+        item_url_ref = item_url
+        if(len(re.findall(self.cemaco_url_regex, item_url)) <= 0):
+            item_url_ref = self.url + item_url_ref
+        return re.sub(self.cemaco_url_regex, "", item_url)
 
     def get_page_data(self):
         return super().get_page_data()
@@ -16,10 +24,16 @@ class CemacoStrategy(BaseStrategy):
         product_items = doc.find_all(class_="product-item")
         result = []
         for single_product in product_items:
-            product_price = single_product.find("span", class_="price-new").string
             product_url = single_product.find("a").get("href")
-            product_image = single_product.find("img").get("src")
-            result.append({"price": product_price, "url": product_url, "img": product_image})
+            product_info = {
+                "price":  single_product.find("div", class_="price-new").string,
+                "product_url":  product_url,
+                "image": self.url + single_product.find("img").get("src"),
+                "product_key": self.get_item_key(product_url),
+                # "description": single_product.find("div", class_=["flags", "ng-binding"]).string,
+                "is_offer": single_product.find("div", class_="offer") != None
+            }
+            result.append(product_info)
 
         return result
 
@@ -30,11 +44,13 @@ class CemacoStrategy(BaseStrategy):
         product_items = doc.find_all(class_="product-item")
         result = []
         for single_product in product_items:
+            product_url = single_product.find("a").get("href")
             product_info = {
                 "price":  single_product.find("div", class_="old-product-price").string,
-                "url":  single_product.find("a").get("href"),
+                "product_url":  product_url,
                 "description": single_product.find("div", class_=["flags", "ng-binding"]).string,
-                "img": single_product.find("img").get("src"),
+                "image": self.url + single_product.find("img").get("src"),
+                "product_key": self.get_item_key(product_url),
                 "is_offer": single_product.find("div", class_="offer") != None
             }
 

@@ -9,7 +9,7 @@ load_dotenv()
 
 MYSQL_URL = os.environ.get("MYSQL_URL")
 TESTS = ["users"]
-APPS = ["users", "scraps"]
+APPS = ["users", "products"]
 
 
 def load_apps(apps=[]):

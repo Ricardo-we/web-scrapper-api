@@ -1,12 +1,12 @@
 
 class DefaultResponses:
     @staticmethod
-    def error_response(error: Exception, message: str):
+    def error_response(error: Exception, message: str = None):
         return {
-            "error": str(error),
-            "message": message
+            "error": error.__traceback__.__str__(),
+            "message": message or error.__cause__.__str__()
         }
-    
+
     @staticmethod
     def success_message(message="Success", status=200):
         return {
