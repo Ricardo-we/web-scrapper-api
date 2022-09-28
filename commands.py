@@ -20,6 +20,12 @@ def run_virtual_env_command(virtual_env_root=VENV_ROOT):
         return False
 
 
+def print_commands():
+    list_pref = "[-]"
+    separator = ":"
+    print(f"{list_pref} run-project{separator} Starts development server")
+    print(f"{list_pref} start-venv{separator} Starts python virtual env and opens a cmd")
+
 # def run_tests():
 #     try:
 #         import_module()
@@ -34,6 +40,8 @@ def main(action=""):
         run_virtual_env_command(DEACTIVATE_ROOT)
     elif action == "run-project":
         subprocess.run("uvicorn main:app --reload",)
+    elif action == "-h":
+        print_commands()
 
 
 if __name__ == "__main__":

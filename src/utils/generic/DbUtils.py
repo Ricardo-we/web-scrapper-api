@@ -4,13 +4,21 @@ from settings import get_mysql_connection
 import settings
 
 
-def create_many_to_many_relation(metadata, association_name, left_table_name, right_table_name):
+def create_many_to_many_relation(metadata, association_name, left_table_name, right_table_name, ondelete="CASCADE"):
     column_suffix = "_id"
     return Table(
         association_name,
         metadata,
-        Column(left_table_name + column_suffix, ForeignKey(left_table_name + ".id")),
-        Column(right_table_name + column_suffix, ForeignKey(right_table_name + ".id")),
+        Column(
+            left_table_name + column_suffix,
+            ForeignKey(left_table_name + ".id", ondelete=ondelete),
+            primary_key=True
+        ),
+        Column(
+            right_table_name + column_suffix,
+            ForeignKey(right_table_name + ".id", ondelete=ondelete),
+            primary_key=True
+        ),
     )
 
 

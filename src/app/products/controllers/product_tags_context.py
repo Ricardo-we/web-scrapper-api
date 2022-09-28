@@ -16,12 +16,12 @@ class ProductTagsContext(BaseContext):
     def __init__(self):
         self.schema = ProductTagSchema
 
-    def find_products_by_tagname(self, tagname):
-        # cemaco_strategy = ScrappingContext("cemaco")
+    def find_products_by_tagname_in_shop(self, tagname):
         # novex_strategy  = ScrappingContext("novex")
-        epa_strategy = ScrappingContext("epa")
-        cemaco_products = epa_strategy.execute(tagname)
-        return cemaco_products
+        cemaco_products = ScrappingContext("cemaco").execute(tagname)
+        epa_products = ScrappingContext("epa").execute(tagname)
+
+        return epa_products + cemaco_products
 
     def create_products_and_join_tags(self, products, product_tag_id):
         # INSERT NEW PRODUCTS

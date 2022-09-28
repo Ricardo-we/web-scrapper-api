@@ -25,27 +25,25 @@ def create_products_by_tag_name(tag_name: str, current_page: int = 0):
     try:
         # CREATE PRODUCT_TAG IF NOT EXISTS
         product_tag = select_or_create(conn, ProductTag, {"name": tag_name}, ProductTag.name == tag_name)
+        filtered_by_tag_products_query = paginated_select(
+            join(
+                ProductTagToProducts,
+                Product,
+                ProductTagToProducts.c.product_id == Product.id
+            ),
+            current_page
+        )\
+            .where(ProductTagToProducts.c.product_tag_id == product_tag.id)\
+            .order_by(Product.price.asc())
 
-        def get_products_by_tag():
-            filtered_by_tag_products = paginated_select(
-                join(
-                    ProductTagToProducts,
-                    Product,
-                    ProductTagToProducts.c.product_id == Product.id
-                ),
-                current_page
-            )
+        products = conn.execute(filtered_by_tag_products_query).fetchall()
 
-            return conn.execute(filtered_by_tag_products).fetchall()
-
-        products = get_products_by_tag()
-
-        if len(products) <= 0:
-            all_products = product_tag_context.find_products_by_tagname(tag_name)
+        if len(products) <= 0 and current_page <= 0:
+            all_products = product_tag_context.find_products_by_tagname_in_shop(tag_name)
             product_tag_context.create_products_and_join_tags(all_products, product_tag.id)
 
-            products = get_products_by_tag()
+            products = conn.execute(filtered_by_tag_products_query).fetchall()
 
-        return {"products": products, "tag": product_tag, "result_size": len(products)}
+        return {"products": products, "tag": product_tag}
     except Exception as err:
         return DefaultResponses.error_response(err)

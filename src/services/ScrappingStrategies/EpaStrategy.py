@@ -10,6 +10,7 @@ class EpaStrategy(BaseStrategy):
     url = "https://gt.epaenlinea.com/"
     endpoint = ""
     cemaco_url_regex = "^https\:\/\/gt.epaenlinea.com\/"
+    shop_name = "epa"
 
     def get_item_key(self, item_url):
         item_url_ref = item_url
@@ -46,18 +47,17 @@ class EpaStrategy(BaseStrategy):
         product_items = doc.find_all(class_="product-item-info")
         result = []
         for single_product in product_items:
-            product_link_tag = single_product.find("a")
-            product_url = product_link_tag.get("href")
+            product_url = single_product.find("a").get("href")
+            product_info = self.create_product_info_dict(
+                product_key=self.get_item_key(product_url),
+                name=single_product.find(class_="product-item-link").string.strip(),
+                description="",
+                price=single_product.find("span", class_="price-wrapper").get("data-price-amount"),
+                image=single_product.find("img").get("src"),
+                product_url=product_url,
+                is_offer=single_product.find("div", class_="offer") != None
+            )
 
-            product_info = {
-                "price":  single_product.find("span", class_="price-wrapper").get("data-price-amount"),
-                "product_url": product_url,
-                "name": product_link_tag.string,
-                "description": "",
-                "image": single_product.find("img").get("src"),
-                "product_key": self.get_item_key(product_url),
-                "is_offer": single_product.find("div", class_="offer") != None
-            }
             result.append(product_info)
 
         return result
