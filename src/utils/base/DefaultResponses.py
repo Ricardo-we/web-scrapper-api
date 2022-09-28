@@ -3,8 +3,8 @@ class DefaultResponses:
     @staticmethod
     def error_response(error: Exception, message: str = None):
         return {
-            "error": error.__traceback__.__str__(),
-            "message": message or error.__cause__.__str__()
+            "error": error.__class__.__name__,
+            "message": message or error.args[0]
         }
 
     @staticmethod

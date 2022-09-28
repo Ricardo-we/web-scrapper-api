@@ -18,3 +18,8 @@ class DbRepository:
 
     def get_connection(self):
         return self.connection.get_connection(self.db_url)
+
+    def set_connection_and_dburl(self, connection: str, db_url: str):
+        self.connection = connection
+        self.db_url = db_url
+        return self

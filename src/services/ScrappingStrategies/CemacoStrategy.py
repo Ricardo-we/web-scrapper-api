@@ -1,4 +1,5 @@
 from src.services.WebDriver.WebDriver import WebDriver
+from src.utils.generic.string_utils import get_float_from_currency_format
 from .BaseStrategy import BaseStrategy
 from bs4 import BeautifulSoup
 import re
@@ -46,15 +47,13 @@ class CemacoStrategy(BaseStrategy):
         for single_product in product_items:
             product_url = single_product.find("a").get("href")
             product_info = {
-                "price":  single_product.find("div", class_="old-product-price").string,
+                "price": get_float_from_currency_format(single_product.find("div", class_="old-product-price").string),
                 "product_url":  product_url,
                 "description": single_product.find("div", class_=["flags", "ng-binding"]).string,
                 "image": self.url + single_product.find("img").get("src"),
                 "product_key": self.get_item_key(product_url),
                 "is_offer": single_product.find("div", class_="offer") != None
             }
-
-            print(product_info)
 
             result.append(product_info)
 

@@ -10,6 +10,7 @@ load_dotenv()
 MYSQL_URL = os.environ.get("MYSQL_URL")
 TESTS = ["users"]
 APPS = ["users", "products"]
+PAGINATION_SIZE = 30
 
 
 def load_apps(apps=[]):
