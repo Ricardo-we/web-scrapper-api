@@ -1,4 +1,4 @@
-from sqlalchemy import select, insert, update, delete
+from sqlalchemy import select, insert, update, delete, or_
 from fastapi.responses import Response
 
 from src.app.products.controllers.product_tags_context import ProductTagsContext
@@ -11,9 +11,13 @@ route_name = "scrap"
 
 
 @router.get(f"/{route_name}")
-def get_scrapped_page(search: str):
+def get_scrapped_page(search: str = None):
     try:
-        result = conn.execute(select(Product).filter(Product.name.like(f"%{search}%"))).fetchall()
+        if not search or len(search) <= 0:
+            query = select(Product).filter(or_(Product.price < 150, Product.is_offer)).limit(20)
+            return conn.execute(query).fetchall()
+        query = select(Product).filter(Product.name.like(f"%{search}%"))
+        result = conn.execute(query).fetchall()
         return result
     except Exception as err:
         return DefaultResponses.error_response(err, "Something went wrong")
