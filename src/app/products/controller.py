@@ -2,6 +2,7 @@ from sqlalchemy import select, insert, update, delete, or_
 from fastapi.responses import Response
 
 from src.app.products.controllers.product_tags_context import ProductTagsContext
+from src.utils.generic.DbUtils import paginated_select
 from .model import Product, ProductTag, conn
 from src.utils.base.DefaultResponses import DefaultResponses
 from src.services.ScrappingStrategies.ScrappingContext import ScrappingContext
@@ -11,12 +12,12 @@ route_name = "products"
 
 
 @router.get(f"/{route_name}")
-def find_products(search: str = None):
+def find_products(search: str = None, page: int = 0):
     try:
         if not search or len(search) <= 0:
-            query = select(Product).filter(or_(Product.price < 150, Product.is_offer)).limit(20)
+            query = paginated_select(Product, page).filter(or_(Product.price < 150, Product.is_offer))
             return conn.execute(query).fetchall()
-        query = select(Product).filter(Product.name.like(f"%{search}%"))
+        query = paginated_select(Product, page).filter(Product.name.like(f"%{search}%"))
         result = conn.execute(query).fetchall()
         return result
     except Exception as err:

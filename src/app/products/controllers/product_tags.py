@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from src.utils.generic.DbUtils import paginated_select, select_or_create
 from .product_tags_context import ProductTagsContext
-from sqlalchemy.sql import insert, update, delete, select, join
+from sqlalchemy import insert, update, delete, select, join, or_
 from sqlalchemy.orm import Session
 from ..model import Product, ProductTag, ProductTagToProducts, conn
 from src.utils.base.DefaultResponses import DefaultResponses
@@ -33,7 +33,7 @@ def find_or_create_products_by_tagname(tag_name: str, current_page: int = 0):
             ),
             current_page
         )\
-            .where(ProductTagToProducts.c.product_tag_id == product_tag.id)\
+            .where(or_(Product.name.like(f"%{tag_name}%"), ProductTagToProducts.c.product_tag_id == product_tag.id))\
             .order_by(Product.price.asc())
 
         products = conn.execute(filtered_by_tag_products_query).fetchall()
