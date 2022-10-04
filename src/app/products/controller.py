@@ -7,11 +7,11 @@ from src.utils.base.DefaultResponses import DefaultResponses
 from src.services.ScrappingStrategies.ScrappingContext import ScrappingContext
 from .controllers.product_tags import router
 
-route_name = "scrap"
+route_name = "products"
 
 
 @router.get(f"/{route_name}")
-def get_scrapped_page(search: str = None):
+def find_products(search: str = None):
     try:
         if not search or len(search) <= 0:
             query = select(Product).filter(or_(Product.price < 150, Product.is_offer)).limit(20)
@@ -23,7 +23,7 @@ def get_scrapped_page(search: str = None):
         return DefaultResponses.error_response(err, "Something went wrong")
 
 
-@router.put(f"/refresh-products")
+@router.put(f"/{route_name}/refresh")
 def refresh():
     try:
         product_tag_context = ProductTagsContext()

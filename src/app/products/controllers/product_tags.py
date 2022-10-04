@@ -8,7 +8,7 @@ from ..model import Product, ProductTag, ProductTagToProducts, conn
 from src.utils.base.DefaultResponses import DefaultResponses
 import settings
 
-route_name = "product_tags"
+route_name = "product-tags"
 router = APIRouter()
 product_tag_context = ProductTagsContext()
 
@@ -21,7 +21,7 @@ def create_tag(product_tag: product_tag_context.schema):
 
 
 @router.get(f"/{route_name}")
-def create_products_by_tag_name(tag_name: str, current_page: int = 0):
+def find_or_create_products_by_tagname(tag_name: str, current_page: int = 0):
     try:
         # CREATE PRODUCT_TAG IF NOT EXISTS
         product_tag = select_or_create(conn, ProductTag, {"name": tag_name}, ProductTag.name == tag_name)

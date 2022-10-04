@@ -52,7 +52,7 @@ class CemacoStrategy(BaseStrategy):
             product_items = doc.find_all(class_="product-item")
             result = []
             for single_product in product_items:
-                product_url = single_product.find("a").get("href")
+                product_url = self.url + single_product.find("a").get("href")
                 product_info = self.create_product_info_dict(
                     product_key=self.get_item_key(product_url),
                     name=single_product.find("div", class_="product-title").string,
