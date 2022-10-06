@@ -67,7 +67,6 @@ class CemacoStrategy(BaseStrategy):
             webdriver.driver.quit()
             return result
         except Exception as err:
-            print(err)
             if len(webdriver.driver.current_url) > 0:
                 webdriver.driver.quit()
             return []

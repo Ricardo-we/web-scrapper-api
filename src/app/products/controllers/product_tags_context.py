@@ -17,11 +17,12 @@ class ProductTagsContext(BaseContext):
         self.schema = ProductTagSchema
 
     def find_products_by_tagname_in_shop(self, tagname):
-        # novex_strategy  = ScrappingContext("novex")
-        cemaco_products = ScrappingContext("cemaco").execute(tagname)
-        epa_products = ScrappingContext("epa").execute(tagname)
+        novex_products = ScrappingContext("novex").execute(tagname)
+        # cemaco_products = ScrappingContext("cemaco").execute(tagname)
+        # epa_products = ScrappingContext("epa").execute(tagname)
 
-        return epa_products + cemaco_products
+        # return epa_products + cemaco_products + novex_products
+        return novex_products
 
     def create_products_and_join_tags(self, products, product_tag_id):
         # INSERT NEW PRODUCTS
@@ -46,6 +47,7 @@ class ProductTagsContext(BaseContext):
 
         conn.execute(
             insert(ProductTagToProducts)
+            .prefix_with("IGNORE")
             .values(product_ids)
         )
         return new_products

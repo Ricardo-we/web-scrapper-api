@@ -7,6 +7,7 @@ class BaseStrategy:
     url = ""
     endpoint = ""
     shop_name = ""
+    full_url = url + endpoint
 
     def __init__(self) -> None:
         pass
@@ -24,15 +25,16 @@ class BaseStrategy:
         }
 
     def get_page_data(self):
-        response = requests.get(self.url + self.endpoint)
+        response = requests.get(self.full_url)
         return response
 
     def get_dynamic_page_data(self):
-        webdriver = WebDriver(self.url + self.endpoint)
+        webdriver = WebDriver(self.full_url)
         return webdriver
 
     def set_endpoint(self, endpoint_name=""):
         self.endpoint = endpoint_name
+        self.full_url = self.url + self.endpoint
         return self
 
     def random_selection(self):

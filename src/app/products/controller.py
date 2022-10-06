@@ -30,10 +30,13 @@ def refresh():
         product_tag_context = ProductTagsContext()
         conn.execute(delete(Product))
         all_tags = conn.execute(select(ProductTag)).fetchall()
+        result = []
         for tag in all_tags:
             all_products = product_tag_context.find_products_by_tagname_in_shop(tag.name)
-            product_tag_context.create_products_and_join_tags(all_products, tag.id)
-        return {"message": "success", "tags": len(all_tags)}
+            # product_tag_context.create_products_and_join_tags(all_products, tag.id)
+            result.append(all_products)
+
+        return {"message": "success", "tags": len(all_tags), "products": all_products}
 
     except Exception as err:
         return DefaultResponses.error_response(err)
