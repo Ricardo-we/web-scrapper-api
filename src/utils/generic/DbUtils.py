@@ -31,7 +31,6 @@ def select_or_create(conn, table_obj, data, where):
 
 
 def paginated_select(table_obj, page=0):
-    print(page * settings.PAGINATION_SIZE)
     query = select(table_obj)\
         .limit(settings.PAGINATION_SIZE)\
         .offset(page * settings.PAGINATION_SIZE)

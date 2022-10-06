@@ -19,29 +19,6 @@ class CemacoStrategy(BaseStrategy):
     def get_page_data(self):
         return super().get_page_data()
 
-    def random_selection(self):
-        page_data = self.get_page_data().text
-        doc = BeautifulSoup(page_data, "html.parser")
-        product_items = doc.find_all(class_="product-item")
-        result = []
-        for single_product in product_items:
-            product_a_tag = single_product.find("a")
-            product_url = product_a_tag.get("href")
-
-            product_info = self.create_product_info_dict(
-                product_key=self.get_item_key(product_url),
-                name=product_a_tag.string,
-                description="",
-                price=get_float_from_currency_format(single_product.find("div", class_="price-new").string),
-                image=self.url + single_product.find("img").get("src"),
-                product_url=product_url,
-                is_offer=single_product.find("div", class_="product-item__discount-news") != None,
-            )
-
-            result.append(product_info)
-
-        return result
-
     def format_page_data(self, search):
         self.set_endpoint(f"/buscar?q={search}")
         webdriver = self.get_dynamic_page_data()

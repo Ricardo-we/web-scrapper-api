@@ -20,25 +20,6 @@ class EpaStrategy(BaseStrategy):
     def get_page_data(self):
         return super().get_page_data()
 
-    def random_selection(self):
-        page_data = self.get_page_data().text
-        doc = BeautifulSoup(page_data, "html.parser")
-        product_items = doc.find_all(class_="product-item")
-        result = []
-        for single_product in product_items:
-            product_url = single_product.find("a").get("href")
-            product_info = {
-                "price":  single_product.find("div", class_="price-new").string,
-                "product_url":  product_url,
-                "image": self.url + single_product.find("img").get("src"),
-                "product_key": self.get_item_key(product_url),
-                # "description": single_product.find("div", class_=["flags", "ng-binding"]).string,
-                "is_offer": single_product.find("div", class_="offer") != None
-            }
-            result.append(product_info)
-
-        return result
-
     def find_page_products(self, product_items):
         result = []
         for single_product in product_items:
@@ -63,17 +44,20 @@ class EpaStrategy(BaseStrategy):
         doc = BeautifulSoup(page_data, "html.parser")
         all_product_items = []
 
-        while doc.find(class_="pages-item-next"):
-            current_page += 1
-            self.set_endpoint(f"catalogsearch/result/index/?p={current_page}&q={search}")
-            page_data = self.get_page_data().text
-            doc = BeautifulSoup(page_data, "html.parser")
-            product_items = doc.find_all(class_="product-item-info")
-            all_product_items.append(product_items)
+        try:
+            while doc.find(class_="pages-item-next"):
+                current_page += 1
+                self.set_endpoint(f"catalogsearch/result/index/?p={current_page}&q={search}")
+                page_data = self.get_page_data().text
+                doc = BeautifulSoup(page_data, "html.parser")
+                product_items = doc.find_all(class_="product-item-info")
+                all_product_items.append(product_items)
 
-        result = []
+            result = []
 
-        for product_items in all_product_items:
-            result += self.find_page_products(product_items)
+            for product_items in all_product_items:
+                result += self.find_page_products(product_items)
 
-        return result
+            return result
+        except Exception as err:
+            return []
