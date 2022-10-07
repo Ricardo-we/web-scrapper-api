@@ -19,7 +19,7 @@ def create_tag(product_tag: product_tag_context.schema):
     try:
         # CREATE PRODUCT_TAG
         tag_name_correct_name = product_tag_context.format_tag_name(product_tag.name)
-        conn.execute(insert(ProductTag, {"name":tag_name_correct_name}).prefix_with("IGNORE"))
+        conn.execute(insert(ProductTag, {"name": tag_name_correct_name}).prefix_with("IGNORE"))
         return{"name": tag_name_correct_name}
     except Exception as err:
         return DefaultResponses.error_response(err)
@@ -32,9 +32,9 @@ def find_or_create_products_by_tagname(tag_name: str, current_page: int = 0):
         tag_name_correct_name = product_tag_context.format_tag_name(tag_name)
 
         product_tag = select_or_create(
-            conn, 
-            ProductTag, 
-            {"name": tag_name_correct_name}, 
+            conn,
+            ProductTag,
+            {"name": tag_name_correct_name},
             ProductTag.name == tag_name_correct_name
         )
         filtered_by_tag_products_query = paginated_select(
@@ -46,7 +46,7 @@ def find_or_create_products_by_tagname(tag_name: str, current_page: int = 0):
             current_page
         )\
             .where(or_(Product.name.like(f"%{tag_name}%"), ProductTagToProducts.c.product_tag_id == product_tag.id))\
-            .order_by(Product.price.asc())
+            .order_by(Product.price.asc(), Product.name)
 
         products = conn.execute(filtered_by_tag_products_query).fetchall()
 
