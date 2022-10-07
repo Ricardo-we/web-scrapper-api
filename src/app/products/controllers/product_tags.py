@@ -46,7 +46,7 @@ def find_or_create_products_by_tagname(tag_name: str, current_page: int = 0):
             current_page
         )\
             .where(or_(Product.name.like(f"%{tag_name}%"), ProductTagToProducts.c.product_tag_id == product_tag.id))\
-            .order_by(Product.price.asc(), Product.name)
+            .order_by(Product.price.asc(), Product.name.asc())
 
         products = conn.execute(filtered_by_tag_products_query).fetchall()
 
