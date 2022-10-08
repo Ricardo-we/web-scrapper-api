@@ -25,7 +25,7 @@ def create_tag(product_tag: product_tag_context.schema):
         return DefaultResponses.error_response(err)
 
 
-@router.get(f"/{route_name}")
+@router.get(f"/{route_name}/{{tag_name}}")
 def find_or_create_products_by_tagname(tag_name: str, current_page: int = 0):
     try:
         # CREATE PRODUCT_TAG IF NOT EXISTS
@@ -57,5 +57,14 @@ def find_or_create_products_by_tagname(tag_name: str, current_page: int = 0):
             products = conn.execute(filtered_by_tag_products_query).fetchall()
 
         return {"products": products, "tag": product_tag}
+    except Exception as err:
+        return DefaultResponses.error_response(err)
+
+
+@router.get(f"/{route_name}")
+def get_all_tags():
+    try:
+        all_tags = select(ProductTag)
+        return conn.execute(all_tags).fetchall()
     except Exception as err:
         return DefaultResponses.error_response(err)

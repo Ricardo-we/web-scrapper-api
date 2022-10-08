@@ -15,11 +15,11 @@ class ProductTagsContext(BaseContext):
     def __init__(self):
         self.schema = ProductTagSchema
 
-    def format_tag_name(self,tag_name):
+    def format_tag_name(self, tag_name):
         tag_name_correct_name = tag_name
         if len(tag_name) > 20:
             tag_name_correct_name = tag_name_correct_name.strip().split(" ")[0]
-        if  tag_name_correct_name.endswith("n"):
+        if any(tag_name_correct_name.endswith(s) for s in ["d", "j", "r", "n", "l", "z"]):
             tag_name_correct_name += "e"
         if not tag_name_correct_name.endswith("s"):
             tag_name_correct_name += "s"

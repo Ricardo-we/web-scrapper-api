@@ -15,16 +15,21 @@ seven_days_in_seconds = int(6.8 * 24 * 60 * 60)
 
 
 @router.get(f"/{route_name}")
-def find_products(search: str = None, page: int = 0):
+def find_products(search: str = None, current_page: int = 0):
     try:
+        query = paginated_select(Product, current_page)\
+            .filter(Product.name.like(f"%{search}%"))\
+            .order_by(Product.price.asc(), Product.name.asc())
+        print(query)
+
         if not search or len(search) <= 0:
-            query = paginated_select(Product, page)\
+            query = paginated_select(Product, current_page)\
                 .filter(or_(Product.price < 150, Product.is_offer))\
                 .order_by(func.rand(), Product.price)
-            return conn.execute(query).fetchall()
-        query = paginated_select(Product, page).filter(Product.name.like(f"%{search}%"))
-        result = conn.execute(query).fetchall()
-        return result
+        print(query)
+
+        finded_products = conn.execute(query).fetchall()
+        return finded_products
     except Exception as err:
         return DefaultResponses.error_response(err, "Something went wrong")
 
