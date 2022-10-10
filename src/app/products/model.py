@@ -20,6 +20,7 @@ class ProductTag(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(255), unique=True)
+    # description = Column(String(300))
     product = relationship("Product", secondary=ProductTagToProducts, back_populates="product_tag")
 
 
