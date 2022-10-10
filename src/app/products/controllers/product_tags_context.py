@@ -32,7 +32,7 @@ class ProductTagsContext(BaseContext):
 
         return epa_products + cemaco_products + novex_products
 
-    def create_products_and_join_tags(self, products, product_tag_id):
+    def create_products_and_join_tags(self, products, product_tag_id=None):
         # INSERT NEW PRODUCTS
         conn.execute(
             insert(Product)
@@ -45,6 +45,9 @@ class ProductTagsContext(BaseContext):
         )
 
         new_products = conn.execute(select(Product).where(Product.product_key.in_(product_keys))).fetchall()
+
+        if not product_tag_id:
+            return new_products
 
         product_ids = list(
             map(
@@ -59,3 +62,7 @@ class ProductTagsContext(BaseContext):
             .values(product_ids)
         )
         return new_products
+
+    def find_and_create_products_from_shop(self, product_or_tagname, product_tag_id=None):
+        all_products = self.find_products_by_tagname_in_shop(product_or_tagname)
+        self.create_products_and_join_tags(all_products, product_tag_id)

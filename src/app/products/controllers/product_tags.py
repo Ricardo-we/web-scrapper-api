@@ -51,9 +51,7 @@ def find_or_create_products_by_tagname(tag_name: str, current_page: int = 0):
         products = conn.execute(filtered_by_tag_products_query).fetchall()
 
         if (len(products) <= 0 and current_page <= 0):
-            all_products = product_tag_context.find_products_by_tagname_in_shop(tag_name_correct_name)
-            product_tag_context.create_products_and_join_tags(all_products, product_tag.id)
-
+            product_tag_context.find_and_create_products_from_shop(tag_name, product_tag.id)
             products = conn.execute(filtered_by_tag_products_query).fetchall()
 
         return {"products": products, "tag": product_tag}

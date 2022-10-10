@@ -39,5 +39,12 @@ class Product(Base):
     product_tag = relationship("ProductTag", secondary=ProductTagToProducts, back_populates="product")
 
 
+class ProductSearchLog(Base):
+    __tablename__ = "product_search_log"
+
+    id = Column(Integer, primary_key=True)
+    search = Column(String(255))
+
+
 # Base.metadata.drop_all(conn)
 Base.metadata.create_all(conn)
