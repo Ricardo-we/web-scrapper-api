@@ -36,8 +36,12 @@ class ProductTagsContext(BaseContext):
         # INSERT NEW PRODUCTS
         conn.execute(
             insert(Product)
-            .prefix_with("IGNORE")
             .values(products)
+            .prefix_with("IGNORE")
+            # .on_conflict_do_update(
+            #     constraint=Product.product_key,
+            #     set_=dict(data=products)
+            # )
         )
         product_keys = map(
             lambda item: item["product_key"],

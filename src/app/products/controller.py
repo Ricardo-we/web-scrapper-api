@@ -47,6 +47,7 @@ def find_products(search: str = None, current_page: int = 0):
         return DefaultResponses.error_response(err, "Something went wrong")
 
 
+# @router.get("/refresh/products-by-tag")
 @router.on_event("startup")
 @repeat_every(seconds=seven_days_in_seconds, wait_first=True)
 def refresh_products_by_tagnames():
