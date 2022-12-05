@@ -7,13 +7,15 @@ from src.app.products.controllers.product_tags_context import ProductTagsContext
 from src.utils.generic.DbUtils import paginated_select, select_or_create
 from .model import Product, ProductSearchLog, ProductTag, conn
 from src.utils.base.DefaultResponses import DefaultResponses
-from src.services.ScrappingStrategies.ScrappingContext import ScrappingContext
+# from src.services.ScrappingStrategies.ScrappingContext import ScrappingContext
 from .controllers.product_tags import router
+from .context import ProductsContext, ProductSearchLogContext
 
 route_name = "products"
 seven_days_in_seconds = int(6.8 * 24 * 60 * 60)
 product_tag_context = ProductTagsContext()
-
+products_context = ProductsContext()
+products_log_context = ProductSearchLogContext()
 
 @router.get(f"/{route_name}")
 def find_products(search: str = None, current_page: int = 0):
@@ -24,21 +26,13 @@ def find_products(search: str = None, current_page: int = 0):
                 .order_by(func.rand(), Product.price)
             return conn.execute(query).fetchall()
 
-        word_separated_search = f'%{"%".join(search.split(" "))}%'
-        query = paginated_select(Product,   current_page)\
-            .filter(or_(
-                Product.name.like(word_separated_search),
-                Product.name.like(f"%{search[0:3]}%{search}%"),
-                Product.description.like(word_separated_search),
-            ))\
+        product_search_query = products_context.product_search_query(search)
+        query = paginated_select(Product, current_page)\
+            .filter(product_search_query)\
             .order_by(Product.price.asc(), Product.name.asc())
-        search_log = conn.execute(select(ProductSearchLog).where(ProductSearchLog.search == search)).fetchone()
+        search_log = products_log_context.find_log_by_search(search)
         products = conn.execute(query).fetchall()
-
-        if len(products) <= 5 and len(search) > 0 and not search_log:
-            conn.execute(insert(ProductSearchLog).values({"search": search}))
-            product_tag_context.find_and_create_products_from_shop(search.split(" ")[0])
-            products = conn.execute(query).fetchall()
+        products_context.check_search_results(products, search, query, search_log)
 
         return products
 
