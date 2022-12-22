@@ -16,42 +16,54 @@ class NovexStrategy(BaseStrategy):
     shop_name = "novex"
 
     def get_item_key(self, item_url):
-        return re.sub(r"^\/", "", item_url).replace(".html", "")
+        result = item_url.split("/producto")[1]
+        result = result.split("/")[2].replace(".html", "")
+        return result
 
     def random_selection(self):
         return []
+
+    def get_product_data(self, single_product):
+        product_title = single_product.find("h4", class_="productCardMain__Name").text
+        product_a_tag = single_product.find("a", class_="productCardGrid-container__Img--link")
+        product_url = self.url + product_a_tag.get("href")
+        product_price = float(
+            single_product.find("h3", class_="price productCardControlsGrid__Price")
+            .text
+            .strip()
+            .split("\n")[0]
+            .replace(",", "")
+        )
+  
+        product_info = self.create_product_info_dict(
+            product_key=self.get_item_key(product_url),
+            name=product_title.strip(),
+            description="",
+            price=product_price,
+            image=single_product.find("img", class_="productCardGrid-container__Img--size").get("data-src"),
+            product_url=product_url,
+        )
+
+        return product_info
 
     def find_page_products(self, product_items):
         result = []
         for single_product in product_items:
             try:
-                product_a_tag = single_product.find("a")
-                product_url = self.url + product_a_tag.get("href")
-                item_description_ul_tag = single_product.find("ul")
-                description = " ".join(map(lambda item: item.string, item_description_ul_tag.find_all("li")
-                                           ),) if item_description_ul_tag else ""
-
-                product_info = self.create_product_info_dict(
-                    product_key=self.get_item_key(product_url),
-                    name=product_a_tag.get("title").strip(),
-                    description=description,
-                    price=float(single_product.find("div", class_="price").text.split(" ")[0].replace(",", "")),
-                    image=single_product.select(".productCard__imgContainer img:first-child")[0].get("data-src"),
-                    product_url=product_url,
-                )
-
-                result.append(product_info)
+                product_data = self.get_product_data(single_product)
+                print(product_data)
+                result.append(product_data)
             except Exception as err:
+                print(err)
                 continue
         return result
-        # S2 COOKIE
 
     def find_current_page_products_container(self, doc):
         products_container = doc.find_all(
             "div",
-            class_="catalog__data"
+            class_="responsiveContainer"
         )[0]
-        return products_container.find_all("div", class_="productCard")
+        return products_container.find_all("div", class_="productCardGrid-container")
 
     def format_page_data(self, search):
         current_page = 0

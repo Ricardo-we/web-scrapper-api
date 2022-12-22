@@ -7,9 +7,9 @@ from src.app.products.controllers.product_tags_context import ProductTagsContext
 from src.utils.generic.DbUtils import paginated_select, select_or_create
 from .model import Product, ProductSearchLog, ProductTag, conn
 from src.utils.base.DefaultResponses import DefaultResponses
-# from src.services.ScrappingStrategies.ScrappingContext import ScrappingContext
-from .controllers.product_tags import router
+from .controllers.product_tags_controller import router
 from .context import ProductsContext, ProductSearchLogContext
+from ...services.ScrappingStrategies.ScrappingContext import ScrappingContext
 
 route_name = "products"
 seven_days_in_seconds = int(6.8 * 24 * 60 * 60)
@@ -30,18 +30,20 @@ def find_products(search: str = None, current_page: int = 0):
         query = paginated_select(Product, current_page)\
             .filter(product_search_query)\
             .order_by(Product.price.asc(), Product.name.asc())
-        search_log = products_log_context.find_log_by_search(search)
+        search_log = products_log_context.find_or_create_log(search)
         products = conn.execute(query).fetchall()
         products_context.check_search_results(products, search, query, search_log)
 
         return products
 
     except Exception as err:
-        print(err)
         return DefaultResponses.error_response(err, "Something went wrong")
 
+@router.get("/test-strategie/{strategie_name}")
+def test_strategie(strategie_name: str, search: str):
+    scrapping_context = ScrappingContext(strategie_name)
+    return scrapping_context.execute(search)
 
-# @router.get("/refresh/products-by-tag")
 @router.on_event("startup")
 @repeat_every(seconds=seven_days_in_seconds, wait_first=True)
 def refresh_products_by_tagnames():

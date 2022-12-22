@@ -18,11 +18,10 @@ product_tag_context = ProductTagsContext()
 def create_tag(product_tag: product_tag_context.schema):
     try:
         # CREATE PRODUCT_TAG
-        tag_name_correct_name = product_tag_context.format_tag_name(product_tag.name)
-        conn.execute(insert(ProductTag, {"name": tag_name_correct_name}).prefix_with("IGNORE"))
-        return{"name": tag_name_correct_name}
+        new_product_tag = product_tag_context.find_or_create_tag(product_tag.name)
+        return {"name": new_product_tag.name}
     except Exception as err:
-        return DefaultResponses.error_response(err)
+        return DefaultResponses.error_response(err, "Invalid tag name")
 
 
 @router.get(f"/{route_name}/{{tag_name}}")

@@ -24,4 +24,8 @@ class ScrappingContext:
         return self
 
     def execute(self, search=""):
-        return self.strategy.format_page_data(search)
+        try:
+            return self.strategy.format_page_data(search)
+        except Exception as err:
+            print(err)
+            return []

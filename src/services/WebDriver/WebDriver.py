@@ -1,20 +1,21 @@
 import time
 from selenium.webdriver import Chrome
+from webdriver_manager.chrome import ChromeDriverManager
+from os import path
 
-CHROME_DRIVER_PATH = "C:/Program Files/chromedriver"
-
+# CHROME_DRIVER_PATH = "C:/Program Files/chromedriver"
+# CHROME_DRIVER_PATH = path.join("C:", "Program Files", "chromedriver") 
 
 class WebDriver:
     driver: Chrome
 
     def __init__(self, url: str):
-        self.driver = Chrome(executable_path=CHROME_DRIVER_PATH)
+        self.driver = self.get_driver()
         self.driver.get(url)
-        # chrome_driver.quit()
 
     @staticmethod
     def get_driver():
-        return Chrome(executable_path=CHROME_DRIVER_PATH)
+        return Chrome(ChromeDriverManager().install())
 
     def doc_scroll_bottom(self, scroll_timeout=3):
         # SCROLL_PAUSE_TIME = 0.5
