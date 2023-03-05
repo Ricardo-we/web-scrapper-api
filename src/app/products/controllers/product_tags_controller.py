@@ -2,7 +2,7 @@ import re
 from fastapi import APIRouter
 
 from src.utils.generic.DbUtils import paginated_select, select_or_create
-from .product_tags_context import ProductTagsContext
+from .product_tags_context import ProductTagsRepositorie
 from sqlalchemy import insert, update, delete, select, join, or_
 from sqlalchemy.orm import Session
 from ..model import Product, ProductTag, ProductTagToProducts, conn
@@ -11,7 +11,7 @@ import settings
 
 route_name = "product-tags"
 router = APIRouter()
-product_tag_context = ProductTagsContext()
+product_tag_context = ProductTagsRepositorie()
 
 
 @router.post(f"/{route_name}")

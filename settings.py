@@ -11,7 +11,7 @@ MYSQL_URL = os.environ.get("MYSQL_URL")
 TESTS = ["users"]
 APPS = ["users", "products"]
 PAGINATION_SIZE = 45
-
+APP_ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 def load_apps(apps=[]):
     loaded_app_modules = []

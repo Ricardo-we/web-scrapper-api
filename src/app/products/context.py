@@ -5,7 +5,7 @@ from sqlalchemy import select, or_, insert, literal_column
 from .model import Product, ProductSearchLog, conn
 
 from src.utils.base.BaseContext import BaseContext
-from .controllers.product_tags_context import ProductTagsContext
+from .controllers.product_tags_context import ProductTagsRepositorie
 
 
 class ProductSchema(BaseModel):
@@ -16,13 +16,13 @@ class ProductSchema(BaseModel):
     tag_id: int
 
 
-class ProductsContext(BaseContext):
+class ProductsRepositorie(BaseContext):
     schema: ProductSchema
-    product_tag_context: ProductTagsContext
+    product_tag_context: ProductTagsRepositorie
 
     def __init__(self):
         self.schema = ProductSchema
-        self.product_tag_context = ProductTagsContext()
+        self.product_tag_context = ProductTagsRepositorie()
 
     def product_search_query(self, search: str):
         word_separated_search = f'%{"%".join(search.split(" "))}%'
@@ -43,7 +43,7 @@ class ProductsContext(BaseContext):
         return True
 
 
-class ProductSearchLogContext:
+class ProductSearchLogRepositorie:
 
     def __init__(self):
         pass

@@ -9,7 +9,7 @@ class ProductTagSchema(BaseModel):
     name: str
 
 
-class ProductTagsContext(BaseContext):
+class ProductTagsRepositorie(BaseContext):
     schema: ProductTagSchema
 
     def __init__(self):

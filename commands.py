@@ -3,6 +3,7 @@ from importlib import import_module
 import subprocess
 import os
 import sys
+from src.utils.commands.run_seeders import run_seeders
 
 VENV_ROOT = os.path.join("venv", "Scripts")
 DEACTIVATE_ROOT = os.path.join(VENV_ROOT,  "deactivate.bat")
@@ -40,6 +41,8 @@ def main(action=""):
         run_virtual_env_command(DEACTIVATE_ROOT)
     elif action == "run-project":
         subprocess.run("uvicorn main:app --reload",)
+    elif action == "run-seeders":
+        run_seeders()
     elif action == "-h":
         print_commands()
 
